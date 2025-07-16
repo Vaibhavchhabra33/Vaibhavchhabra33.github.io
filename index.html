@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furnish & Comfort - Quality Furniture & Mattresses</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        /* Custom styles for the website */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4; /* A soft, warm off-white */
+            color: #333;
+        }
+
+        /* Custom accent color */
+        .accent-color {
+            background-color: #0A4D68; /* A deep, calming blue */
+        }
+        .accent-text {
+            color: #0A4D68;
+        }
+
+        /* Animation for elements fading in on scroll */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-animate.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom shadow for product cards */
+        .product-card-shadow {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .product-card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styles for Modals */
+        .modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal > div {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Order Tracking Timeline */
+        .timeline { position: relative; padding-left: 2.5rem; }
+        .timeline-item { position: relative; padding-bottom: 1.5rem; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-item::before { content: ''; position: absolute; left: 0; top: 4px; width: 1rem; height: 1rem; border-radius: 50%; background-color: #d1d5db; }
+        .timeline-item::after { content: ''; position: absolute; left: 7px; top: 20px; bottom: 0; width: 2px; background-color: #d1d5db; }
+        .timeline-item.completed::before, .timeline-item.completed::after { background-color: #0A4D68; }
+        .timeline-item:last-child::after { display: none; }
+        
+        /* Account Modal Tab styles */
+        .account-tab { cursor: pointer; padding: 0.75rem 1rem; border-bottom: 2px solid transparent; color: #6b7280; }
+        .account-tab.active { color: #0A4D68; border-bottom-color: #0A4D68; font-weight: 600; }
+
+        /* Checkout Step Indicator */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            color: #9ca3af; /* gray-400 */
+            transition: all 0.3s ease;
+        }
+        .step-indicator.active {
+            color: #0A4D68; /* accent-text */
+            font-weight: 600;
+        }
+        .step-indicator .step-circle {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            border: 2px solid #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .step-indicator.active .step-circle {
+            border-color: #0A4D68;
+            background-color: #0A4D68;
+            color: white;
+        }
+        .step-indicator.completed .step-circle {
+            border-color: #0A4D68;
+            background-color: #0A4D68;
+            color: white;
+        }
+        .product-card {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="#" class="text-2xl font-bold accent-text">Furnish & Comfort</a>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-600 hover:accent-text transition-colors duration-300">Home</a>
+                    <a href="#products" class="text-gray-600 hover:accent-text transition-colors duration-300">Products</a>
+                    <a href="#about" class="text-gray-600 hover:accent-text transition-colors duration-300">About Us</a>
+                    <a href="#contact" class="text-gray-600 hover:accent-text transition-colors duration-300">Contact</a>
+                </nav>
+                <div class="flex items-center space-x-5">
+                    <button class="text-gray-600 hover:accent-text transition-colors duration-300"><i data-lucide="search" class="w-5 h-5"></i></button>
+                    <button id="my-account-button" class="text-gray-600 hover:accent-text transition-colors duration-300"><i data-lucide="user" class="w-5 h-5"></i></button>
+                    <button id="cart-button" class="relative text-gray-600 hover:accent-text transition-colors duration-300"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span id="cart-count" class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">0</span></button>
+                    <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:accent-text transition-colors duration-300"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/90 backdrop-blur-lg">
+            <a href="#home" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:accent-text transition-colors duration-300">Home</a>
+            <a href="#products" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:accent-text transition-colors duration-300">Products</a>
+            <a href="#about" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:accent-text transition-colors duration-300">About Us</a>
+            <a href="#contact" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 hover:accent-text transition-colors duration-300">Contact</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section id="home" class="relative min-h-[85vh] flex items-center bg-cover bg-center bg-no-repeat scroll-animate"><div class="absolute inset-0 bg-black/30"></div><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2070&auto=format&fit=crop" alt="Modern living room with a stylish sofa" class="absolute inset-0 w-full h-full object-cover -z-10"><div class="container mx-auto px-6 text-center relative"><h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4">Design Your Dream Space</h1><p class="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">Discover our exclusive collection of furniture and mattresses, crafted for comfort and style.</p><a href="#products" class="bg-white accent-text font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-200 transition-all duration-300 transform hover:scale-105">Shop Collection</a></div></section>
+        <section id="products" class="py-20 bg-white"><div class="container mx-auto px-6"><div class="text-center mb-12 scroll-animate"><h2 class="text-3xl md:text-4xl font-bold accent-text">Featured Products</h2><p class="text-gray-600 mt-2">Handpicked for you. The best of our collection.</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="product-card bg-white rounded-lg overflow-hidden product-card-shadow scroll-animate" 
+                data-id="prod_001" 
+                data-name="Minimalist Wooden Chair" 
+                data-price="180.00" 
+                data-image="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=2070&auto=format&fit=crop"
+                data-description="Crafted from solid oak, this minimalist chair combines Scandinavian design principles with timeless comfort. Its clean lines and natural finish make it a versatile addition to any dining room or office space."
+                data-specs='{"Dimensions": "32\"H x 18\"W x 20\"D", "Material": "Solid Oak Wood", "Weight": "15 lbs"}'>
+                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=2070&auto=format&fit=crop" alt="Minimalist Wooden Chair" class="w-full h-64 object-cover pointer-events-none">
+                <div class="p-6 pointer-events-none"><h3 class="font-semibold text-lg text-gray-800">Minimalist Wooden Chair</h3><p class="accent-text font-bold mt-2 text-xl">$180.00</p></div>
+            </div>
+            <div class="product-card bg-white rounded-lg overflow-hidden product-card-shadow scroll-animate" style="transition-delay: 100ms;"
+                data-id="prod_002" 
+                data-name="Modern Velvet Sofa" 
+                data-price="750.00" 
+                data-image="https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1964&auto=format&fit=crop"
+                data-description="A statement piece for any modern living room. This sofa is upholstered in luxurious, soft-touch velvet and features a sturdy kiln-dried hardwood frame. Deep seating and plush cushions provide ultimate comfort."
+                data-specs='{"Dimensions": "34\"H x 85\"W x 38\"D", "Material": "Velvet, Hardwood", "Weight": "120 lbs"}'>
+                <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1964&auto=format&fit=crop" alt="Modern Velvet Sofa" class="w-full h-64 object-cover pointer-events-none">
+                <div class="p-6 pointer-events-none"><h3 class="font-semibold text-lg text-gray-800">Modern Velvet Sofa</h3><p class="accent-text font-bold mt-2 text-xl">$750.00</p></div>
+            </div>
+            <div class="product-card bg-white rounded-lg overflow-hidden product-card-shadow scroll-animate" style="transition-delay: 200ms;"
+                data-id="prod_003" 
+                data-name="Plush Memory Foam Mattress" 
+                data-price="999.00" 
+                data-image="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop"
+                data-description="Experience the perfect night's sleep with our 12-inch plush mattress. It features multiple layers of high-density memory foam and a cooling gel infusion to regulate temperature and provide pressure relief."
+                data-specs='{"Size": "Queen (60\" x 80\")", "Material": "Memory Foam, Cooling Gel", "Firmness": "Medium-Plush"}'>
+                <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop" alt="Plush Memory Foam Mattress" class="w-full h-64 object-cover pointer-events-none">
+                <div class="p-6 pointer-events-none"><h3 class="font-semibold text-lg text-gray-800">Plush Memory Foam Mattress</h3><p class="accent-text font-bold mt-2 text-xl">$999.00</p></div>
+            </div>
+            <div class="product-card bg-white rounded-lg overflow-hidden product-card-shadow scroll-animate" style="transition-delay: 300ms;"
+                data-id="prod_004" 
+                data-name="Scandinavian Desk" 
+                data-price="320.00" 
+                data-image="https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?q=80&w=1887&auto=format&fit=crop"
+                data-description="Create a productive and stylish workspace with this Scandinavian-inspired desk. It offers a spacious work surface, two drawers for storage, and is made from sustainably sourced wood with a clean white and natural finish."
+                data-specs='{"Dimensions": "30\"H x 48\"W x 24\"D", "Material": "MDF, Pine Wood", "Weight": "45 lbs"}'>
+                <img src="https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?q=80&w=1887&auto=format&fit=crop" alt="Scandinavian Desk" class="w-full h-64 object-cover pointer-events-none">
+                <div class="p-6 pointer-events-none"><h3 class="font-semibold text-lg text-gray-800">Scandinavian Desk</h3><p class="accent-text font-bold mt-2 text-xl">$320.00</p></div>
+            </div>
+        </div></div></section>
+        <section id="about" class="py-20"><div class="container mx-auto px-6"><div class="text-center mb-12 scroll-animate"><h2 class="text-3xl md:text-4xl font-bold accent-text">Why Choose Us?</h2><p class="text-gray-600 mt-2">We provide more than just furniture. We provide comfort.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center"><div class="p-6 scroll-animate"><div class="flex items-center justify-center h-16 w-16 rounded-full accent-color text-white mx-auto mb-4"><i data-lucide="award" class="w-8 h-8"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">High-Quality Materials</h3><p class="text-gray-600">We source the finest materials to ensure durability and longevity for every piece.</p></div><div class="p-6 scroll-animate" style="transition-delay: 150ms;"><div class="flex items-center justify-center h-16 w-16 rounded-full accent-color text-white mx-auto mb-4"><i data-lucide="truck" class="w-8 h-8"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Free & Fast Shipping</h3><p class="text-gray-600">Get your new furniture delivered to your doorstep at no extra cost, and fast.</p></div><div class="p-6 scroll-animate" style="transition-delay: 300ms;"><div class="flex items-center justify-center h-16 w-16 rounded-full accent-color text-white mx-auto mb-4"><i data-lucide="life-buoy" class="w-8 h-8"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">24/7 Customer Support</h3><p class="text-gray-600">Our dedicated support team is always here to help you with any questions.</p></div></div></div></section>
+        <section id="contact" class="py-20 bg-white"><div class="container mx-auto px-6"><div class="text-center mb-12 scroll-animate"><h2 class="text-3xl md:text-4xl font-bold accent-text">Get In Touch</h2><p class="text-gray-600 mt-2">Have questions? We'd love to hear from you.</p></div><div class="max-w-2xl mx-auto"><form class="bg-white p-8 rounded-lg shadow-md space-y-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label><input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Your Name"></div><div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Your Email"></div></div><div><label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label><textarea id="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Your message..."></textarea></div><div class="text-center"><button type="submit" class="accent-color text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-opacity-90 transition-all duration-300">Send Message</button></div></form></div></div></section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white"><div class="container mx-auto px-6 py-12"><div class="grid grid-cols-1 md:grid-cols-4 gap-8"><div class="col-span-1 md:col-span-2"><h3 class="text-2xl font-bold mb-2">Furnish & Comfort</h3><p class="text-gray-400 max-w-md">Your one-stop shop for stylish and comfortable furniture and mattresses. We are dedicated to helping you create a home you love.</p></div><div><h4 class="font-semibold text-lg mb-4">Quick Links</h4><ul class="space-y-2"><li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li><li><a href="#products" class="text-gray-400 hover:text-white">Products</a></li><li><a href="#about" class="text-gray-400 hover:text-white">About</a></li><li><a href="#" class="text-gray-400 hover:text-white">FAQs</a></li></ul></div><div><h4 class="font-semibold text-lg mb-4">Contact Us</h4><ul class="space-y-2 text-gray-400"><li class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>123 Furniture Lane, Comfort City</li><li class="flex items-center"><i data-lucide="phone" class="w-4 h-4 mr-2"></i>(123) 456-7890</li><li class="flex items-center"><i data-lucide="mail" class="w-4 h-4 mr-2"></i>support@furnishcomfort.com</li></ul></div></div><div class="mt-10 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm"><p>&copy; 2024 Furnish & Comfort. All Rights Reserved.</p></div></div></footer>
+
+    <!-- Product Detail Modal -->
+    <div id="product-detail-modal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center invisible opacity-0 p-4">
+        <div class="w-full max-w-4xl h-auto bg-white rounded-lg shadow-xl transform scale-95 flex flex-col md:flex-row">
+            <div class="p-2 md:w-1/2">
+                <img id="modal-product-image" src="" alt="Product Image" class="w-full h-full object-cover rounded-lg">
+            </div>
+            <div class="p-8 md:w-1/2 flex flex-col">
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start">
+                        <h2 id="modal-product-name" class="text-3xl font-bold accent-text mb-2"></h2>
+                        <button id="close-product-detail-btn" class="text-gray-400 hover:text-gray-700 -mt-4 -mr-4"><i data-lucide="x" class="w-7 h-7"></i></button>
+                    </div>
+                    <p id="modal-product-price" class="text-2xl font-semibold text-gray-700 mb-4"></p>
+                    <p id="modal-product-description" class="text-gray-600 mb-6"></p>
+                    <h4 class="font-bold text-gray-800 mb-2">Specifications:</h4>
+                    <ul id="modal-product-specs" class="space-y-1 text-gray-600 list-disc list-inside"></ul>
+                </div>
+                <div class="mt-6">
+                    <button id="modal-add-to-cart-btn" class="w-full accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-opacity-90 transition-all duration-300">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Account Modal -->
+    <div id="account-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center invisible opacity-0 p-4"><div class="w-full max-w-4xl h-[90vh] bg-white rounded-lg shadow-xl transform scale-95 flex flex-col"><div class="p-6 flex justify-between items-center border-b"><h2 class="text-2xl font-bold accent-text">My Account</h2><button id="close-account-btn" class="text-gray-500 hover:text-gray-800"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="flex border-b"><div id="tab-orders" class="account-tab active">My Orders</div><div id="tab-profile" class="account-tab">Profile</div><div id="tab-bank" class="account-tab">Bank Details</div></div><div class="flex-grow overflow-y-auto"><div id="content-orders" class="p-6 bg-gray-50"><p class="text-gray-500">Loading your orders...</p></div><div id="content-profile" class="p-8 hidden"><h3 class="text-xl font-bold text-gray-800 mb-6">Account Information</h3><div class="space-y-4 max-w-md"><div><label class="text-sm font-medium text-gray-500">Full Name</label><p class="text-lg text-gray-800">John Doe</p></div><div><label class="text-sm font-medium text-gray-500">Email Address</label><p class="text-lg text-gray-800">john.doe@example.com</p></div><div><label class="text-sm font-medium text-gray-500">Member Since</label><p class="text-lg text-gray-800">July 16, 2025</p></div><div class="pt-4"><button class="accent-color text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Edit Profile</button></div></div></div><div id="content-bank" class="p-8 hidden"><h3 class="text-xl font-bold text-gray-800 mb-6">Bank Account Details</h3><form class="space-y-6 max-w-md"><div><label for="bank-name" class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label><input type="text" id="bank-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="e.g., State Bank of India"></div><div><label for="acc-number" class="block text-sm font-medium text-gray-700 mb-1">Account Number</label><input type="text" id="acc-number" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter your account number"></div><div><label for="ifsc-code" class="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label><input type="text" id="ifsc-code" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter bank's IFSC code"></div><div class="pt-4"><button type="submit" class="accent-color text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Save Details</button></div></form></div></div></div></div>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cart-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end invisible opacity-0"><div class="w-full max-w-md h-full bg-white shadow-xl transform translate-x-full"><div class="flex flex-col h-full"><div class="p-6 flex justify-between items-center border-b"><h2 class="text-2xl font-bold accent-text">Your Cart</h2><button id="close-cart-btn" class="text-gray-500 hover:text-gray-800"><i data-lucide="x" class="w-6 h-6"></i></button></div><div id="cart-items-container" class="flex-grow p-6 overflow-y-auto"><p class="text-gray-500">Your cart is empty.</p></div><div class="p-6 border-t bg-gray-50"><div class="flex justify-between items-center mb-4"><span class="text-lg font-semibold text-gray-700">Subtotal</span><span id="cart-subtotal" class="text-xl font-bold accent-text">$0.00</span></div><button id="place-order-btn" class="w-full accent-color text-white py-3 px-4 rounded-lg font-semibold text-lg hover:bg-opacity-90 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">Place Order</button><div class="text-center mt-2"><small id="user-id-display" class="text-gray-400 text-xs"></small></div></div></div></div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center invisible opacity-0 p-4"><div class="w-full max-w-2xl bg-white rounded-lg shadow-xl transform scale-95 flex flex-col"><div class="p-6 flex justify-between items-center border-b"><h2 class="text-2xl font-bold accent-text">Checkout</h2><button id="close-checkout-btn" class="text-gray-500 hover:text-gray-800"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="p-6 flex justify-around border-b bg-gray-50"><div id="step-indicator-1" class="step-indicator active"><div class="step-circle">1</div>Shipping Address</div><div id="step-indicator-2" class="step-indicator"><div class="step-circle">2</div>Payment</div></div><div class="flex-grow overflow-y-auto"><div id="checkout-step-1" class="p-8"><form id="address-form" class="space-y-4"><div><label for="shipping-name" class="block text-sm font-medium text-gray-700">Full Name</label><input type="text" id="shipping-name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div><label for="shipping-address" class="block text-sm font-medium text-gray-700">Address</label><input type="text" id="shipping-address" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="shipping-city" class="block text-sm font-medium text-gray-700">City</label><input type="text" id="shipping-city" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div><label for="shipping-state" class="block text-sm font-medium text-gray-700">State</label><input type="text" id="shipping-state" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="shipping-zip" class="block text-sm font-medium text-gray-700">ZIP Code</label><input type="text" id="shipping-zip" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div><label for="shipping-phone" class="block text-sm font-medium text-gray-700">Phone Number</label><input type="tel" id="shipping-phone" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div></div></form></div><div id="checkout-step-2" class="p-8 hidden"><div class="space-y-6"><h3 class="text-lg font-medium text-gray-900">Select Payment Method</h3><div id="payment-options" class="space-y-4"><div class="border border-gray-300 rounded-lg p-4 has-[:checked]:border-blue-600 has-[:checked]:ring-2 has-[:checked]:ring-blue-500"><label class="flex items-center"><input type="radio" name="payment-method" value="cod" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked><span class="ml-3 font-medium text-gray-700">Cash on Delivery (COD)</span></label></div><div class="border border-gray-300 rounded-lg p-4 has-[:checked]:border-blue-600 has-[:checked]:ring-2 has-[:checked]:ring-blue-500"><label class="flex items-center"><input type="radio" name="payment-method" value="card" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="ml-3 font-medium text-gray-700">Credit/Debit Card</span></label></div></div><div id="card-details-form" class="hidden space-y-4 pt-4 border-t"><div><label for="card-number" class="block text-sm font-medium text-gray-700">Card Number</label><input type="text" id="card-number" placeholder="•••• •••• •••• ••••" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div class="grid grid-cols-2 gap-4"><div><label for="card-expiry" class="block text-sm font-medium text-gray-700">Expiry Date</label><input type="text" id="card-expiry" placeholder="MM / YY" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div><div><label for="card-cvc" class="block text-sm font-medium text-gray-700">CVC</label><input type="text" id="card-cvc" placeholder="•••" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></div></div></div></div></div></div><div class="p-6 border-t bg-gray-50 flex justify-between items-center"><button id="checkout-back-btn" class="hidden text-gray-600 font-semibold py-2 px-5 rounded-lg hover:bg-gray-200">Back</button><button id="checkout-next-btn" class="ml-auto accent-color text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Next: Payment</button><button id="confirm-order-btn" class="hidden ml-auto accent-color text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Confirm Order</button></div></div></div>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center invisible opacity-0"><div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm mx-auto"><div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4"><i data-lucide="check" class="h-10 w-10 text-green-600"></i></div><h2 class="text-2xl font-bold text-gray-800 mb-2">Order Placed!</h2><p class="text-gray-600 mb-6">Thank you for your purchase. We've received your order and will process it shortly.</p><button id="close-success-modal-btn" class="accent-color text-white py-2 px-6 rounded-lg font-semibold hover:bg-opacity-90 transition-colors duration-300">Continue Shopping</button></div></div>
+
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // --- Firebase Configuration ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- Firebase Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, addDoc, collection, serverTimestamp, deleteDoc, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- App State ---
+        let cart = [];
+        let db, auth, userId;
+
+        // --- DOM Elements ---
+        const cartButton = document.getElementById('cart-button');
+        const myAccountButton = document.getElementById('my-account-button');
+        const cartModal = document.getElementById('cart-modal');
+        const accountModal = document.getElementById('account-modal');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const productDetailModal = document.getElementById('product-detail-modal');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+        const closeAccountBtn = document.getElementById('close-account-btn');
+        const closeCheckoutBtn = document.getElementById('close-checkout-btn');
+        const closeProductDetailBtn = document.getElementById('close-product-detail-btn');
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const ordersContainer = document.getElementById('content-orders');
+        const cartCount = document.getElementById('cart-count');
+        const cartSubtotal = document.getElementById('cart-subtotal');
+        const placeOrderBtn = document.getElementById('place-order-btn');
+        const productCards = document.querySelectorAll('.product-card');
+        const orderSuccessModal = document.getElementById('order-success-modal');
+        const closeSuccessModalBtn = document.getElementById('close-success-modal-btn');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const accountTabs = document.querySelectorAll('.account-tab');
+        const accountContents = { orders: document.getElementById('content-orders'), profile: document.getElementById('content-profile'), bank: document.getElementById('content-bank') };
+        // Checkout Modal Elements
+        const checkoutStep1 = document.getElementById('checkout-step-1');
+        const checkoutStep2 = document.getElementById('checkout-step-2');
+        const stepIndicator1 = document.getElementById('step-indicator-1');
+        const stepIndicator2 = document.getElementById('step-indicator-2');
+        const checkoutBackBtn = document.getElementById('checkout-back-btn');
+        const checkoutNextBtn = document.getElementById('checkout-next-btn');
+        const confirmOrderBtn = document.getElementById('confirm-order-btn');
+        const addressForm = document.getElementById('address-form');
+        const paymentOptions = document.querySelectorAll('input[name="payment-method"]');
+        const cardDetailsForm = document.getElementById('card-details-form');
+        // Product Detail Modal Elements
+        const modalProductImage = document.getElementById('modal-product-image');
+        const modalProductName = document.getElementById('modal-product-name');
+        const modalProductPrice = document.getElementById('modal-product-price');
+        const modalProductDescription = document.getElementById('modal-product-description');
+        const modalProductSpecs = document.getElementById('modal-product-specs');
+        const modalAddToCartBtn = document.getElementById('modal-add-to-cart-btn');
+
+
+        // --- Firebase Initialization ---
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = `User ID: ${userId}`;
+                        await listenForCartUpdates();
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                });
+            } catch (error) { console.error("Firebase initialization failed:", error); }
+        }
+
+        // --- Cart Logic ---
+        function addToCart(product) {
+            const existingProductIndex = cart.findIndex(item => item.id === product.id);
+            if (existingProductIndex > -1) { cart[existingProductIndex].quantity++; } else { cart.push({ ...product, quantity: 1 }); }
+            updateCart();
+        }
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+        function updateCart() {
+            renderCartItems();
+            updateCartCount();
+            updateCartSubtotal();
+            saveCartToFirestore();
+            placeOrderBtn.disabled = cart.length === 0;
+        }
+        async function saveCartToFirestore() {
+            if (!userId || !db) return;
+            try {
+                const cartRef = doc(db, `artifacts/${appId}/users/${userId}/cart`, 'current');
+                await setDoc(cartRef, { items: cart });
+            } catch (error) { console.error("Error saving cart to Firestore:", error); }
+        }
+        async function listenForCartUpdates() {
+            if (!userId || !db) return;
+            const cartRef = doc(db, `artifacts/${appId}/users/${userId}/cart`, 'current');
+            onSnapshot(cartRef, (docSnap) => {
+                cart = docSnap.exists() ? docSnap.data().items || [] : [];
+                updateCart();
+            }, (error) => console.error("Error listening for cart updates:", error));
+        }
+
+        // --- Order Logic ---
+        async function fetchAndRenderOrders() {
+            if (!userId || !db) return;
+            ordersContainer.innerHTML = '<p class="text-gray-500">Loading your orders...</p>';
+            const ordersQuery = query(collection(db, `artifacts/${appId}/users/${userId}/orders`));
+            try {
+                const querySnapshot = await getDocs(ordersQuery);
+                ordersContainer.innerHTML = '';
+                if (querySnapshot.empty) {
+                    ordersContainer.innerHTML = '<p class="text-gray-500">You have not placed any orders yet.</p>';
+                    return;
+                }
+                const orders = [];
+                querySnapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+                orders.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+                orders.forEach(order => ordersContainer.appendChild(createOrderElement(order)));
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error fetching orders: ", error);
+                ordersContainer.innerHTML = '<p class="text-red-500">Could not fetch orders.</p>';
+            }
+        }
+        function createOrderElement(order) {
+            const orderElement = document.createElement('div');
+            orderElement.className = 'bg-white p-6 rounded-lg shadow-md mb-6';
+            const itemsHtml = order.items.map(item => `<div class="flex items-center py-2"><img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-md mr-4"><div><p class="font-semibold text-gray-700">${item.name}</p><p class="text-sm text-gray-500">Qty: ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</p></div></div>`).join('');
+            const orderDate = new Date(order.createdAt.seconds * 1000).toLocaleDateString();
+            orderElement.innerHTML = `<div class="md:flex justify-between items-start"><div><div class="mb-4"><p class="text-sm text-gray-500">Order ID: <span class="font-medium text-gray-700">${order.id}</span></p><p class="text-sm text-gray-500">Placed on: <span class="font-medium text-gray-700">${orderDate}</span></p><p class="text-lg font-bold accent-text mt-1">Total: $${order.total.toFixed(2)}</p></div><div class="space-y-2">${itemsHtml}</div></div><div class="mt-6 md:mt-0 md:ml-8 md:w-1/3"><h4 class="font-semibold mb-3 text-gray-800">Order Status</h4>${createTrackingTimeline(order.status)}</div></div>`;
+            return orderElement;
+        }
+        function createTrackingTimeline(status) {
+            const statuses = ['Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+            const currentIndex = statuses.indexOf(status);
+            return `<div class="timeline">${statuses.map((s, index) => `<div class="timeline-item ${index <= currentIndex ? 'completed' : ''}"><p class="font-semibold ${index <= currentIndex ? 'accent-text' : 'text-gray-500'}">${s}</p></div>`).join('')}</div>`;
+        }
+        function simulateOrderStatusUpdate(orderId) {
+            const statuses = ['Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+            let currentIndex = 0;
+            const interval = setInterval(() => {
+                currentIndex++;
+                if (currentIndex >= statuses.length) { clearInterval(interval); return; }
+                console.log(`Order ${orderId} status updated to: ${statuses[currentIndex]}`);
+            }, 5000);
+        }
+
+        // --- Rendering Logic ---
+        function renderCartItems() {
+            cartItemsContainer.innerHTML = '';
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+                return;
+            }
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex items-center justify-between py-4 border-b';
+                itemElement.innerHTML = `<div class="flex items-center"><img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4"><div><p class="font-semibold text-gray-800">${item.name}</p><p class="text-sm text-gray-500">$${parseFloat(item.price).toFixed(2)} x ${item.quantity}</p></div></div><div class="flex items-center"><p class="font-semibold text-lg accent-text mr-4">$${(item.price * item.quantity).toFixed(2)}</p><button class="remove-from-cart-btn text-red-500 hover:text-red-700" data-id="${item.id}"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
+                cartItemsContainer.appendChild(itemElement);
+            });
+            lucide.createIcons();
+        }
+        function updateCartCount() { cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0); }
+        function updateCartSubtotal() { cartSubtotal.textContent = `$${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`; }
+
+        // --- UI Interaction & Modals ---
+        function toggleModal(modal, show) {
+            const modalDiv = modal.querySelector('div');
+            if (show) {
+                modal.classList.remove('invisible', 'opacity-0');
+                modalDiv.classList.remove('scale-95', 'translate-x-full');
+            } else {
+                modalDiv.classList.add(modal === cartModal ? 'translate-x-full' : 'scale-95');
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('invisible'), 300);
+            }
+        }
+        
+        async function confirmAndPlaceOrder() {
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            if (paymentMethod === 'card') {
+                const cardNumber = document.getElementById('card-number').value;
+                const cardExpiry = document.getElementById('card-expiry').value;
+                const cardCvc = document.getElementById('card-cvc').value;
+                if (!cardNumber || !cardExpiry || !cardCvc) {
+                    alert('Please fill in all card details.'); // Replace with a better notification
+                    return;
+                }
+            }
+
+            const address = {
+                name: document.getElementById('shipping-name').value,
+                address: document.getElementById('shipping-address').value,
+                city: document.getElementById('shipping-city').value,
+                state: document.getElementById('shipping-state').value,
+                zip: document.getElementById('shipping-zip').value,
+                phone: document.getElementById('shipping-phone').value,
+            };
+
+            const order = { userId, items: cart, total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), createdAt: serverTimestamp(), status: 'Processing', shippingAddress: address, paymentMethod };
+            
+            try {
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/users/${userId}/orders`), order);
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/cart`, 'current'));
+                cart = [];
+                updateCart();
+                toggleModal(checkoutModal, false);
+                toggleModal(orderSuccessModal, true);
+                simulateOrderStatusUpdate(docRef.id);
+            } catch (error) { console.error("Error placing order:", error); }
+        }
+
+        function switchAccountTab(targetTabId) {
+            accountTabs.forEach(tab => {
+                const tabId = tab.id.split('-')[1];
+                const content = accountContents[tabId];
+                if (tab.id === targetTabId) { tab.classList.add('active'); content.classList.remove('hidden'); } 
+                else { tab.classList.remove('active'); content.classList.add('hidden'); }
+            });
+        }
+
+        function switchCheckoutStep(step) {
+            if (step === 1) {
+                checkoutStep1.classList.remove('hidden');
+                checkoutStep2.classList.add('hidden');
+                stepIndicator1.classList.add('active');
+                stepIndicator1.classList.remove('completed');
+                stepIndicator2.classList.remove('active', 'completed');
+                checkoutBackBtn.classList.add('hidden');
+                checkoutNextBtn.classList.remove('hidden');
+                confirmOrderBtn.classList.add('hidden');
+            } else if (step === 2) {
+                if (!addressForm.checkValidity()) {
+                    addressForm.reportValidity();
+                    return;
+                }
+                checkoutStep1.classList.add('hidden');
+                checkoutStep2.classList.remove('hidden');
+                stepIndicator1.classList.add('completed');
+                stepIndicator1.classList.remove('active');
+                stepIndicator2.classList.add('active');
+                checkoutBackBtn.classList.remove('hidden');
+                checkoutNextBtn.classList.add('hidden');
+                confirmOrderBtn.classList.remove('hidden');
+            }
+        }
+
+        function showProductDetail(productData) {
+            modalProductImage.src = productData.image;
+            modalProductName.textContent = productData.name;
+            modalProductPrice.textContent = `$${parseFloat(productData.price).toFixed(2)}`;
+            modalProductDescription.textContent = productData.description;
+            
+            modalProductSpecs.innerHTML = '';
+            const specs = JSON.parse(productData.specs);
+            for (const key in specs) {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="font-semibold">${key}:</span> ${specs[key]}`;
+                modalProductSpecs.appendChild(li);
+            }
+
+            // Set data for the modal's add to cart button
+            modalAddToCartBtn.dataset.id = productData.id;
+            modalAddToCartBtn.dataset.name = productData.name;
+            modalAddToCartBtn.dataset.price = productData.price;
+            modalAddToCartBtn.dataset.image = productData.image;
+
+            toggleModal(productDetailModal, true);
+        }
+
+        // --- Event Listeners ---
+        cartButton.addEventListener('click', () => toggleModal(cartModal, true));
+        closeCartBtn.addEventListener('click', () => toggleModal(cartModal, false));
+        myAccountButton.addEventListener('click', async () => {
+            switchAccountTab('tab-orders');
+            await fetchAndRenderOrders();
+            toggleModal(accountModal, true);
+        });
+        closeAccountBtn.addEventListener('click', () => toggleModal(accountModal, false));
+        placeOrderBtn.addEventListener('click', () => {
+            toggleModal(cartModal, false);
+            switchCheckoutStep(1);
+            toggleModal(checkoutModal, true);
+        });
+        closeCheckoutBtn.addEventListener('click', () => toggleModal(checkoutModal, false));
+        checkoutNextBtn.addEventListener('click', () => switchCheckoutStep(2));
+        checkoutBackBtn.addEventListener('click', () => switchCheckoutStep(1));
+        confirmOrderBtn.addEventListener('click', confirmAndPlaceOrder);
+        
+        accountTabs.forEach(tab => tab.addEventListener('click', () => switchAccountTab(tab.id)));
+        
+        productCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Prevent add to cart button inside card from triggering this
+                if (e.target.closest('.add-to-cart-btn')) return;
+                showProductDetail(card.dataset);
+            });
+        });
+
+        closeProductDetailBtn.addEventListener('click', () => toggleModal(productDetailModal, false));
+
+        modalAddToCartBtn.addEventListener('click', (e) => {
+            addToCart(e.target.dataset);
+            toggleModal(productDetailModal, false);
+        });
+
+        cartItemsContainer.addEventListener('click', (e) => {
+            const removeButton = e.target.closest('.remove-from-cart-btn');
+            if (removeButton) removeFromCart(removeButton.dataset.id);
+        });
+        closeSuccessModalBtn.addEventListener('click', () => toggleModal(orderSuccessModal, false));
+        paymentOptions.forEach(option => option.addEventListener('change', (e) => {
+            cardDetailsForm.classList.toggle('hidden', e.target.value !== 'card');
+        }));
+
+        document.getElementById('mobile-menu-button').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in-view'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+
+        // --- Initial Load ---
+        window.onload = () => {
+            lucide.createIcons();
+            initializeFirebase();
+        };
+    </script>
+</body>
+</html>
