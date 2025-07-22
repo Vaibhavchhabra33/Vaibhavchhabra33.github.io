@@ -1,1 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghar360 - EVERYTHING YOUR HOME DESERVES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #FBF9F4;
+            --bg-card: #FFFFFF;
+            --text-dark: #3C4043;
+            --text-light: #6B6B6B;
+            --primary: #8C6A5D;
+            --primary-hover: #73574D;
+            --border-color: #EAE0D5;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+        }
+        .nav-link {
+            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 80%;
+        }
+        .btn {
+            @apply px-6 py-3 rounded-lg font-semibold shadow-sm transition-all duration-300 ease-in-out;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-hover hover:shadow-md transform hover:-translate-y-0.5;
+        }
+        .card {
+            @apply bg-card rounded-xl shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-transparent hover:shadow-xl hover:border-border-color flex flex-col;
+        }
+        .card .card-image-wrapper {
+            @apply overflow-hidden relative;
+        }
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+        .card-image {
+             @apply transition-transform duration-300 ease-in-out;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-input {
+            @apply w-full px-4 py-3 border border-border-color rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary transition-shadow;
+        }
+    </style>
+</head>
+<body class="antialiased">
 
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-border-color">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
+                <div class="flex items-center">
+                    <a href="#" class="flex-shrink-0 flex items-center gap-3" onclick="showPage('home')">
+                        <img class="h-14 w-auto" src="https://iili.io/FNbtWiB.jpg" alt="Ghar360 Logo">
+                        <div class="hidden md:block">
+                            <span class="text-2xl font-bold text-text-dark tracking-tight">Ghar360</span>
+                            <p class="text-xs text-text-light tracking-wider">EVERYTHING YOUR HOME DESERVES</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="hidden lg:flex items-center space-x-4">
+                    <a href="#" class="nav-link" onclick="showPage('home')">Home</a>
+                    <a href="#" class="nav-link" onclick="showPage('products', 'Furniture')">Furniture</a>
+                    <a href="#" class="nav-link" onclick="showPage('products', 'Homeware')">Homeware</a>
+                    <a href="#" class="nav-link" onclick="showPage('products', 'Kitchen Appliances')">Kitchen Appliances</a>
+                    <a href="#" class="nav-link" onclick="showPage('contact')">Contact Us</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="hidden sm:block nav-link" onclick="showPage('orders')">
+                        <i data-lucide="package" class="inline-block h-5 w-5 mr-1"></i> My Orders
+                    </a>
+                    <a href="#" class="btn btn-primary text-sm" onclick="showPage('createAccount')">
+                        <i data-lucide="user-plus" class="inline-block h-4 w-4 mr-1"></i> Create Account
+                    </a>
+                    <div class="relative">
+                        <button onclick="showPage('checkout')" class="p-3 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <i data-lucide="shopping-cart"></i>
+                            <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform translate-x-1/4 -translate-y-1/4">0</span>
+                        </button>
+                    </div>
+                    <div class="lg:hidden">
+                         <button id="mobile-menu-button" class="p-2 rounded-md text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="menu"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="lg:hidden hidden bg-white border-t border-border-color">
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('home')">Home</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('products', 'Furniture')">Furniture</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('products', 'Homeware')">Homeware</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('products', 'Kitchen Appliances')">Kitchen Appliances</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('contact')">Contact Us</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-700 hover:bg-gray-50" onclick="showPage('orders')">My Orders</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2070&auto=format&fit=crop" alt="Hero Image" class="w-full h-72 sm:h-96 md:h-[500px] object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end">
+                        <div class="text-white p-8 md:p-12">
+                            <h1 class="text-4xl md:text-6xl font-bold mb-3 drop-shadow-md">Find Your Perfect Piece</h1>
+                            <p class="text-lg md:text-xl mb-6 max-w-2xl drop-shadow-sm">Curated collections of furniture, homeware, and appliances for a home you'll love.</p>
+                            <button class="btn btn-primary text-lg" onclick="showPage('products', 'All')">Shop All Collections</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section>
+                <h2 class="text-3xl font-bold text-center mb-10">Featured Products</h2>
+                <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page -->
+        <div id="products-page" class="page">
+            <h2 id="products-category-title" class="text-4xl font-bold mb-10 text-center">Our Products</h2>
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            </div>
+        </div>
+        
+        <!-- Contact Us Page -->
+        <div id="contact-page" class="page max-w-2xl mx-auto">
+             <div class="bg-white p-10 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-center">Get In Touch</h2>
+                <p class="text-center text-text-light mb-8">Have a question or feedback? We'd love to hear from you!</p>
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label for="contact-name" class="block text-sm font-medium text-text-dark mb-1">Name</label>
+                        <input type="text" id="contact-name" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="contact-email" class="block text-sm font-medium text-text-dark mb-1">Email</label>
+                        <input type="email" id="contact-email" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="contact-message" class="block text-sm font-medium text-text-dark mb-1">Message</label>
+                        <textarea id="contact-message" rows="5" class="form-input" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full btn btn-primary !py-4 text-base">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- My Orders Page -->
+        <div id="orders-page" class="page max-w-4xl mx-auto">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-6">My Orders</h2>
+                <div id="orders-list" class="space-y-6">
+                    <p class="text-text-light">You have not placed any orders yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Account Page -->
+        <div id="create-account-page" class="page max-w-md mx-auto">
+            <div class="bg-white p-10 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-center">Create an Account</h2>
+                <form id="create-account-form" class="space-y-6">
+                    <div>
+                        <label for="account-name" class="block text-sm font-medium text-text-dark mb-1">Full Name</label>
+                        <input type="text" id="account-name" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="account-email" class="block text-sm font-medium text-text-dark mb-1">Email Address</label>
+                        <input type="email" id="account-email" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="account-password" class="block text-sm font-medium text-text-dark mb-1">Password</label>
+                        <input type="password" id="account-password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="w-full btn btn-primary !py-4 text-base">Create Account</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Checkout Page -->
+        <div id="checkout-page" class="page max-w-5xl mx-auto">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-8">Shopping Cart & Checkout</h2>
+                <div id="cart-items-container">
+                </div>
+                <div id="checkout-form-container" class="hidden mt-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-6">Shipping Address</h3>
+                            <form id="address-form" class="space-y-4">
+                                <div>
+                                    <label for="address-street" class="block text-sm font-medium">Street Address</label>
+                                    <input type="text" id="address-street" class="form-input" required>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="address-city" class="block text-sm font-medium">City</label>
+                                        <input type="text" id="address-city" class="form-input" required>
+                                    </div>
+                                    <div>
+                                        <label for="address-state" class="block text-sm font-medium">State</label>
+                                        <input type="text" id="address-state" class="form-input" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="address-zip" class="block text-sm font-medium">ZIP Code</label>
+                                    <input type="text" id="address-zip" class="form-input" required>
+                                </div>
+                            </form>
+                        </div>
+                        <div>
+                             <h3 class="text-2xl font-semibold mb-6">Payment Method</h3>
+                             <div class="space-y-4">
+                                 <label class="flex items-center p-4 border-2 border-border-color rounded-lg has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all cursor-pointer">
+                                     <input type="radio" name="payment" value="card" class="h-5 w-5 text-primary focus:ring-primary" checked>
+                                     <span class="ml-4 font-medium">Credit / Debit Card</span>
+                                 </label>
+                                 <label class="flex items-center p-4 border-2 border-border-color rounded-lg has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all cursor-pointer">
+                                     <input type="radio" name="payment" value="paypal" class="h-5 w-5 text-primary focus:ring-primary">
+                                     <span class="ml-4 font-medium">PayPal</span>
+                                 </label>
+                                  <label class="flex items-center p-4 border-2 border-border-color rounded-lg has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all cursor-pointer">
+                                     <input type="radio" name="payment" value="cod" class="h-5 w-5 text-primary focus:ring-primary">
+                                     <span class="ml-4 font-medium">Cash on Delivery</span>
+                                 </label>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 text-right">
+                        <button id="place-order-btn" class="btn btn-primary text-lg">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-text-dark text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold">Ghar360</h3>
+                    <p class="text-sm text-gray-400 mt-2">EVERYTHING YOUR HOME DESERVES</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold">Shop</h3>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white" onclick="showPage('products', 'Furniture')">Furniture</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white" onclick="showPage('products', 'Homeware')">Homeware</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white" onclick="showPage('products', 'Kitchen Appliances')">Kitchen Appliances</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold">Support</h3>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white" onclick="showPage('contact')">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white" onclick="showPage('orders')">Track Order</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold">Follow Us</h3>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i data-lucide="instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i data-lucide="twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+                &copy; 2025 Ghar360. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Message Modal -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" onclick="this.classList.add('hidden')">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm mx-4" onclick="event.stopPropagation()">
+            <p id="modal-message" class="text-lg mb-6"></p>
+            <button id="modal-close-btn" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATABASE ---
+        const products = [
+            { id: 1, name: 'Modern Velvet Sofa', price: 499.99, category: 'Furniture', image: 'https://images.unsplash.com/photo-1540574163024-588462494917?q=80&w=1974&auto=format&fit=crop', featured: true },
+            { id: 2, name: 'Oak Dining Table', price: 350.00, category: 'Furniture', image: 'https://images.unsplash.com/photo-1593349480503-64d4a4a4a5a5?q=80&w=2070&auto=format&fit=crop' },
+            { id: 3, name: 'Ergonomic Office Chair', price: 180.50, category: 'Furniture', image: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=1974&auto=format&fit=crop' },
+            { id: 4, name: 'King Size Bed Frame', price: 600.00, category: 'Furniture', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop' },
+            { id: 5, name: 'Ceramic Dinnerware Set', price: 89.99, category: 'Homeware', image: 'https://images.unsplash.com/photo-1622241944697-a4b5c73ab4b4?q=80&w=1935&auto=format&fit=crop', featured: true },
+            { id: 6, name: 'Linen Throw Pillow', price: 25.00, category: 'Homeware', image: 'https://images.unsplash.com/photo-1617463223938-f75a35575315?q=80&w=1974&auto=format&fit=crop' },
+            { id: 7, name: 'Abstract Wall Art', price: 120.00, category: 'Homeware', image: 'https://images.unsplash.com/photo-1576657989358-a2141a443158?q=80&w=1974&auto=format&fit=crop' },
+            { id: 8, name: 'Scented Soy Candle', price: 18.99, category: 'Homeware', image: 'https://images.unsplash.com/photo-1614032337323-e705f7783a15?q=80&w=1974&auto=format&fit=crop' },
+            { id: 9, name: 'Stand Mixer', price: 299.99, category: 'Kitchen Appliances', image: 'https://images.unsplash.com/photo-1578639268313-a04193d08f6a?q=80&w=1974&auto=format&fit=crop', featured: true },
+            { id: 10, name: 'Espresso Machine', price: 450.00, category: 'Kitchen Appliances', image: 'https://images.unsplash.com/photo-1565452344011-e352839b47a3?q=80&w=1974&auto=format&fit=crop' },
+            { id: 11, name: 'Air Fryer', price: 110.00, category: 'Kitchen Appliances', image: 'https://images.unsplash.com/photo-1658043133314-c1585630a10a?q=80&w=2070&auto=format&fit=crop', featured: true },
+            { id: 12, name: 'High-Speed Blender', price: 150.75, category: 'Kitchen Appliances', image: 'https://images.unsplash.com/photo-1590132789138-13d8650a0026?q=80&w=1974&auto=format&fit=crop' },
+            { id: 13, name: 'Classic Wooden Wardrobe', price: 750.00, category: 'Furniture', image:, featured: true }
+        ];
+
+        let cart = [];
+        let orders = [];
+
+        // --- UTILITY FUNCTIONS ---
+        const formatPrice = (price) => `₹${price.toFixed(2)}`;
+        
+        const showMessage = (message) => {
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('message-modal').classList.remove('hidden');
+        };
+
+        // --- PAGE NAVIGATION ---
+        const pages = document.querySelectorAll('.page');
+        function showPage(pageId, category = null) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`${pageId}-page`).classList.add('active');
+            window.scrollTo(0, 0);
+            
+            if (pageId === 'products') {
+                renderProducts(category);
+            }
+            if(pageId === 'checkout') {
+                renderCart();
+            }
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function createProductCard(product) {
+            return `
+                <div class="card">
+                    <div class="card-image-wrapper h-64">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover card-image">
+                    </div>
+                    <div class="p-5 text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-semibold text-lg truncate">${product.name}</h3>
+                            <p class="text-text-light text-sm">${product.category}</p>
+                            <span class="font-bold text-xl text-text-dark mt-2 inline-block">${formatPrice(product.price)}</span>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn btn-primary text-sm w-full" onclick="addToCart(${product.id})">
+                                <i data-lucide="shopping-cart" class="inline-block h-4 w-4 mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderFeaturedProducts() {
+            const container = document.getElementById('featured-products');
+            const featured = products.filter(p => p.featured);
+            container.innerHTML = featured.map(createProductCard).join('');
+            lucide.createIcons();
+        }
+
+        function renderProducts(category) {
+            const titleEl = document.getElementById('products-category-title');
+            const gridEl = document.getElementById('products-grid');
+            
+            titleEl.textContent = category === 'All' ? 'All Our Products' : `Shop ${category}`;
+            
+            const filteredProducts = category === 'All' 
+                ? products 
+                : products.filter(p => p.category === category);
+            
+            gridEl.innerHTML = filteredProducts.map(createProductCard).join('');
+            lucide.createIcons();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items-container');
+            const checkoutFormContainer = document.getElementById('checkout-form-container');
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-text-light text-center py-12">Your cart is empty. Let\'s find something beautiful!</p>';
+                checkoutFormContainer.classList.add('hidden');
+                return;
+            }
+
+            checkoutFormContainer.classList.remove('hidden');
+
+            const cartItemsHtml = cart.map(item => `
+                <div class="flex items-center justify-between py-4 border-b border-border-color">
+                    <div class="flex items-center">
+                        <img src="${item.image}" alt="${item.name}" class="h-20 w-20 object-cover rounded-lg mr-4">
+                        <div>
+                            <p class="font-semibold">${item.name}</p>
+                            <p class="text-sm text-text-light">${formatPrice(item.price)} x ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                         <span class="font-semibold w-24 text-right">${formatPrice(item.price * item.quantity)}</span>
+                         <button onclick="removeFromCart(${item.id})" class="ml-6 text-red-500 hover:text-red-700 transition-colors"><i data-lucide="trash-2"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            const summaryHtml = `
+                <div class="mt-6 space-y-2 text-right font-medium">
+                    <p>Subtotal: <span class="font-semibold w-32 inline-block">${formatPrice(subtotal)}</span></p>
+                    <p>Tax (8%): <span class="font-semibold w-32 inline-block">${formatPrice(tax)}</span></p>
+                    <p class="text-xl font-bold mt-2">Total: <span class="font-semibold w-32 inline-block">${formatPrice(total)}</span></p>
+                </div>
+            `;
+            
+            container.innerHTML = cartItemsHtml + summaryHtml;
+            lucide.createIcons();
+        }
+        
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            if (orders.length === 0) {
+                container.innerHTML = '<p class="text-text-light">You have not placed any orders yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = orders.map(order => `
+                <div class="border border-border-color rounded-lg p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-lg text-primary">Order #${order.id}</p>
+                            <p class="text-sm text-text-light">Placed on: ${order.date}</p>
+                        </div>
+                        <span class="px-3 py-1 text-sm font-semibold rounded-full ${order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">${order.status}</span>
+                    </div>
+                    <div class="mt-4 border-t border-border-color pt-4">
+                        ${order.items.map(item => `
+                            <div class="flex justify-between items-center text-sm mb-1">
+                                <span>${item.name} (x${item.quantity})</span>
+                                <span>${formatPrice(item.price * item.quantity)}</span>
+                            </div>
+                        `).join('')}
+                        <div class="flex justify-between items-center font-bold mt-2 text-lg">
+                             <span>Total</span>
+                             <span>${formatPrice(order.total)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- CART LOGIC ---
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartCount();
+            showMessage(`${product.name} has been added to your cart.`);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            renderCart();
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        // --- ORDER LOGIC ---
+        function placeOrder() {
+            const addressForm = document.getElementById('address-form');
+            if (!addressForm.checkValidity()) {
+                showMessage('Please fill out all address fields.');
+                addressForm.reportValidity();
+                return;
+            }
+            
+            if (cart.length === 0) {
+                showMessage('Your cart is empty.');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const total = subtotal * 1.08;
+
+            const newOrder = {
+                id: Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toLocaleDateString(),
+                items: [...cart],
+                total: total,
+                status: 'Processing'
+            };
+
+            orders.unshift(newOrder);
+            cart = [];
+            
+            updateCartCount();
+            renderOrders();
+            showPage('orders');
+            showMessage(`Your order #${newOrder.id} has been placed successfully!`);
+        }
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeaturedProducts();
+            lucide.createIcons();
+            
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                showMessage('Thank you for your message! We will get back to you soon.');
+                e.target.reset();
+                showPage('home');
+            });
+
+            document.getElementById('create-account-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                showMessage('Account created successfully! Welcome to Ghar360.');
+                e.target.reset();
+                showPage('home');
+            });
+            
+            document.getElementById('place-order-btn').addEventListener('click', placeOrder);
+
+            document.getElementById('modal-close-btn').addEventListener('click', () => {
+                document.getElementById('message-modal').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
